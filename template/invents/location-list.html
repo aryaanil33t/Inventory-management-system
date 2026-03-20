@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="container mt-5 mb-5">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Locations</h3>
+
+        <a href="{% url 'add-location' %}" class="btn btn-primary">
+            + Add Location
+        </a>
+    </div>
+
+    {% if locations %}
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+
+            <table class="table table-hover mb-0">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th class="text-center">Warehouses</th> <!-- ✅ FIX -->
+                        <th>Address</th>
+                        <th>Status</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for location in locations %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ location.name }}</td>
+
+                        <!-- ✅ WAREHOUSE COLUMN (EYE BUTTON HERE) -->
+                        <td class="text-center">
+                            <a href="{% url 'warehouse-list' location.uuid %}" 
+                               class="btn btn-sm btn-info"
+                               title="View Warehouses">
+                                <i class="fa fa-eye"></i>
+                            </a>
+                        </td>
+
+                        <td>{{ location.address }}</td>
+
+                        <!-- STATUS -->
+                        <td>
+                            {% if location.active_status %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- ACTIONS -->
+                        <td class="text-center">
+
+                            <!-- Edit -->
+                            <a href="{% url 'edit-location' location.uuid %}" 
+                               class="btn btn-sm btn-warning me-1">
+                                <i class="fa fa-edit"></i>
+                            </a>
+
+                            <!-- Delete -->
+                            <form method="post" 
+                                  action="{% url 'delete-location' location.uuid %}" 
+                                  style="display:inline;">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger"
+                                        onclick="return confirm('Delete this location?')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    {% else %}
+        <div class="alert alert-info">
+            No locations found.
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

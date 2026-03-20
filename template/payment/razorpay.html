@@ -1,0 +1,38 @@
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+<form id="payment-form" method="POST" action="{% url 'payment-verify' %}">
+    {% csrf_token %}
+    <input type="hidden" name="razorpay_order_id">
+    <input type="hidden" name="razorpay_payment_id">
+    <input type="hidden" name="razorpay_signature">
+</form>
+
+<script>
+
+var options = {
+
+    "key": "{{ RZP_KEY_ID }}",
+    "amount": "{{ amount }}",
+    "currency": "INR",
+    "name": "Inventory",
+    "description": "Payments Made Easy",
+    "order_id": "{{ rzp_order_id }}",
+
+    "handler": function (response){
+
+        document.querySelector("[name='razorpay_payment_id']").value = response.razorpay_payment_id;
+        document.querySelector("[name='razorpay_order_id']").value = response.razorpay_order_id;
+        document.querySelector("[name='razorpay_signature']").value = response.razorpay_signature;
+
+        document.getElementById("payment-form").submit();
+    }
+
+};
+
+var rzp1 = new Razorpay(options);
+
+window.onload = function(){
+    rzp1.open();
+}
+
+</script>

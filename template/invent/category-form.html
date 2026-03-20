@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm p-4">
+
+                <h3 class="mb-4">
+                    {% if category %}Edit{% else %}Add{% endif %} Category
+                </h3>
+
+                {% if error %}
+                    <div class="alert alert-danger">{{ error }}</div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" name="name" id="name"
+                               value="{{ category.name|default:'' }}" required>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">
+                        {% if category %}Update{% else %}Add{% endif %}
+                    </button>
+                    <a href="{% url 'category-list' %}" class="btn btn-secondary">Cancel</a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

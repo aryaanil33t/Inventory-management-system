@@ -1,0 +1,19 @@
+.seat-box{
+
+    display:inline-block;
+    padding:4px 8px;
+    border:1px solid #fff;
+    border-radius:4px;
+    font-size:0.875rem;
+    color:#fff;
+}
+
+input[type='checkbox']:checked + .seat-box{
+
+    background-color: green;
+
+    border-color: #386641;
+
+    color: #fff;
+}
+

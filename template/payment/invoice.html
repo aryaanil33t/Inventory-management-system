@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<section style="padding-top:120px;background:#0c0c0c;min-height:100vh;color:white">
+
+<div class="container d-flex justify-content-center">
+
+<div class="card shadow-lg p-4" style="max-width:720px;width:100%;background:#1e1e1e;border-radius:16px">
+
+<!-- Header -->
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+
+<h3 class="text-warning mb-0">🧾 Order Invoice</h3>
+
+<a href="{% url 'invoice-pdf' transaction.uuid %}" 
+target="_blank"
+class="text-warning fs-4"
+title="Download Invoice">
+
+<i class="bi bi-download"></i>
+
+</a>
+
+</div>
+
+<hr>
+
+<!-- Order Info -->
+
+<div class="row mb-2">
+<div class="col text-secondary">Order ID</div>
+<div class="col text-end fw-semibold"style="color: aquamarine;">#{{ transaction.payment.order.id }}</div>
+</div>
+
+<div class="row mb-2">
+<div class="col text-secondary">Customer</div>
+<div class="col text-end fw-semibold"style="color: aquamarine;">
+{{ transaction.payment.order.customer.first_name }}
+</div>
+</div>
+
+<div class="row mb-3">
+<div class="col text-secondary">Payment Status</div>
+<div class="col text-end fw-semibold text-success">
+{{ transaction.payment.status }}
+</div>
+</div>
+
+<hr>
+
+<!-- Product Section -->
+
+{% for item in transaction.payment.order.orderitem_set.all %}
+
+<div class="mb-3">
+
+<h4 class="fw-bold">{{ item.product.name }}</h4>
+
+
+<div class="row mb-1">
+<div class="col text-secondary">Category</div>
+<div class="col text-end" style="color: aquamarine;">{{ item.product.category.name }}</div>
+</div>
+
+<div class="row mb-1">
+<div class="col text-secondary">Quantity</div>
+<div class="col text-end" style="color: aquamarine;">{{ item.quantity }}</div>
+</div>
+
+<div class="row">
+<div class="col text-secondary">Price per Item</div>
+<div class="col text-end"style="color: aquamarine;">₹{{ item.price }}</div>
+</div>
+
+</div>
+
+<hr>
+
+{% endfor %}
+
+<!-- Total -->
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+
+<h5 class="text-secondary">Total Paid</h5>
+
+<h2 class="text-warning fw-bold">
+₹{{ transaction.amount }}
+</h2>
+
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+{% endblock %}

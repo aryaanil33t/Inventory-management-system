@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="container mt-5">
+    <h2 class="mb-4">My Orders</h2>
+    
+
+    {% if orders %}
+
+        {% for order in orders %}
+        <div class="card mb-4 p-3 shadow-sm">
+
+            <div class="d-flex justify-content-between">
+                <div>
+                    <strong>Order ID:</strong> {{ order.id }} <br>
+                    <strong>Date:</strong> {{ order.created_at }}
+                </div>
+            </div>
+
+            <hr>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Qty</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for item in order.orderitem_set.all %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>₹{{ item.price }}</td>
+                        <td>₹{{ item.total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <div class="d-flex justify-content-between mt-3">
+
+                <!-- ✅ STATUS -->
+                <div>
+                    <strong>Status:</strong> 
+
+                    {% if order.status|upper == "COMPLETED" %}
+                        <span class="text-success">Paid</span>
+
+                    {% elif order.status|upper == "CANCELLED" %}
+                        <span class="text-danger">Cancelled</span>
+
+                    {% else %}
+                        <span class="text-warning">Pending</span>
+                    {% endif %}
+                </div>
+
+                <!-- ✅ ACTION BUTTONS -->
+                <div class="d-flex gap-2">
+
+                    <!-- ✅ INVOICE -->
+                    {% with payment=order.payment %}
+                        {% if order.status|upper == "COMPLETED" and payment and payment.transactions.first %}
+                            <a href="{% url 'invoice' payment.transactions.first.uuid %}" 
+                               class="btn btn-sm btn-primary">
+                               View Invoice
+                            </a>
+                        {% endif %}
+                    {% endwith %}
+
+   
+                    <!-- CANCEL ORDER -->
+{% if order.status|upper == "PENDING" %}
+
+<form method="POST" action="{% url 'cancel-order' order.id %}">
+    {% csrf_token %}
+
+    <button type="submit" 
+            class="btn btn-sm btn-danger"
+            onclick="return confirm('Are you sure you want to cancel this order?');">
+        Cancel Order
+    </button>
+</form>
+
+{% endif %}
+
+                </div>
+
+            </div>
+
+        </div>
+        {% endfor %}
+
+    {% else %}
+        <p>No orders yet.</p>
+    {% endif %}
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="container mt-5 mb-5">
+    <div class="card shadow-sm border-0 p-4">
+        <h4 class="mb-4">Edit Rack: {{ rack.name }}</h4>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <!-- Rack Name -->
+            <div class="mb-3">
+                <label class="form-label">Rack Name</label>
+                {{ form.name }}
+            </div>
+
+            <!-- Capacity -->
+            <div class="mb-3">
+                <label class="form-label">Capacity</label>
+                {{ form.capacity }}
+            </div>
+
+            <!-- Warehouse -->
+            <div class="mb-3">
+                <label class="form-label">Warehouse</label>
+                {{ form.warehouse }}
+            </div>
+
+            <button type="submit" class="btn btn-success">Update</button>
+            <a href="{% url 'racks' rack.warehouse.uuid %}" class="btn btn-secondary ms-2">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

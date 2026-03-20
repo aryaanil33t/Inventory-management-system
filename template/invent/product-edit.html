@@ -1,0 +1,130 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<main class="main">
+
+<section id="hero" class="hero section dark-background">
+
+  <img src="/static/assets/img/hero-bg.jpg" alt="">
+
+  <div class="container d-flex flex-column align-items-center">
+
+    <div class="col-lg-8">
+
+      <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+
+        <div class="row gy-4">
+
+          <!-- Product Name -->
+          <div class="col-md-6">
+            {{ form.name }}
+            {% if form.name.errors %}
+            <p class="small text-danger">{{ form.name.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- SKU -->
+          <div class="col-md-6">
+            {{ form.sku }}
+            {% if form.sku.errors %}
+            <p class="small text-danger">{{ form.sku.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Product Image -->
+          <div class="col-md-6">
+            {{ form.product_image }}
+            {% if form.product_image.errors %}
+            <p class="small text-danger">{{ form.product_image.errors.0 }}</p>
+            {% endif %}
+
+            {% if form.instance.product_image %}
+            <img src="{{ form.instance.product_image.url }}"
+                 style="width:100px;height:100px;"
+                 class="rounded mt-2">
+            {% endif %}
+          </div>
+
+          <!-- Category -->
+          <div class="col-md-6">
+            {{ form.category }}
+            {% if form.category.errors %}
+            <p class="small text-danger">{{ form.category.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Supplier -->
+          <div class="col-md-6">
+            {{ form.supplier }}
+            {% if form.supplier.errors %}
+            <p class="small text-danger">{{ form.supplier.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Purchase Price -->
+          <div class="col-md-6">
+            {{ form.purchase_price }}
+            {% if form.purchase_price.errors %}
+            <p class="small text-danger">{{ form.purchase_price.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Selling Price -->
+          <div class="col-md-6">
+            {{ form.selling_price }}
+            {% if form.selling_price.errors %}
+            <p class="small text-danger">{{ form.selling_price.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Stock Quantity -->
+          <div class="col-md-6">
+            {{ form.stock_quantity }}
+            {% if form.stock_quantity.errors %}
+            <p class="small text-danger">{{ form.stock_quantity.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Minimum Stock -->
+          <div class="col-md-6">
+            {{ form.minimum_stock }}
+            {% if form.minimum_stock.errors %}
+            <p class="small text-danger">{{ form.minimum_stock.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Description -->
+          <div class="col-md-12">
+            {{ form.description }}
+            {% if form.description.errors %}
+            <p class="small text-danger">{{ form.description.errors.0 }}</p>
+            {% endif %}
+          </div>
+
+          <!-- Submit Button -->
+          <div class="col-md-12 text-center">
+            <button type="submit"
+                    style="color:#fff; background-color:#28a745; border:0; padding:10px 30px; border-radius:50px;">
+              {% if form.instance.pk %}
+                Update Product
+              {% else %}
+                Add Product
+              {% endif %}
+            </button>
+          </div>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+</section>
+
+</main>
+
+{% endblock %}

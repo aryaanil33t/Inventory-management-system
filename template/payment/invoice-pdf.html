@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Invoice</title>
+
+<style>
+
+@page{
+    size:A4;
+    margin:25px;
+}
+
+body{
+    font-family: DejaVu Sans;
+    color:#333;
+}
+
+.header{
+    display:flex;
+    justify-content:space-between;
+    border-bottom:2px solid #444;
+    padding-bottom:10px;
+}
+
+.company{
+    font-size:22px;
+    font-weight:bold;
+}
+
+.invoice-title{
+    font-size:18px;
+    font-weight:bold;
+}
+
+.info{
+    margin-top:20px;
+    margin-bottom:20px;
+}
+
+.info table{
+    width:100%;
+}
+
+.info td{
+    padding:4px 0;
+}
+
+table.items{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table.items th{
+    background:#f2f2f2;
+    border:1px solid #ddd;
+    padding:10px;
+    text-align:left;
+}
+
+table.items td{
+    border:1px solid #ddd;
+    padding:10px;
+}
+
+.right{
+    text-align:right;
+}
+
+.total-box{
+    margin-top:20px;
+    width:100%;
+}
+
+.total-box td{
+    padding:8px;
+}
+
+.total{
+    font-size:20px;
+    font-weight:bold;
+}
+
+.footer{
+    margin-top:40px;
+    text-align:center;
+    color:#777;
+    font-size:12px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+
+<div class="header">
+
+<div class="company">
+Inventory Store
+</div>
+
+<div class="invoice-title">
+INVOICE
+</div>
+
+</div>
+
+<!-- CUSTOMER INFO -->
+
+<div class="info">
+
+<table>
+
+<tr>
+<td><strong>Order ID:</strong></td>
+<td>#{{transaction.payment.order.id}}</td>
+</tr>
+
+<tr>
+<td><strong>Customer:</strong></td>
+<td>{{transaction.payment.order.customer.first_name}}</td>
+</tr>
+
+<tr>
+<td><strong>Payment Status:</strong></td>
+<td>{{transaction.payment.status}}</td>
+</tr>
+
+</table>
+
+</div>
+
+<!-- PRODUCT TABLE -->
+
+<table class="items">
+
+<tr>
+<th>Product</th>
+<th>Category</th>
+<th class="right">Quantity</th>
+<th class="right">Price</th>
+</tr>
+
+{% for item in transaction.payment.order.orderitem_set.all %}
+
+<tr>
+
+<td>{{item.product.name}}</td>
+
+<td>{{item.product.category.name}}</td>
+
+<td class="right">{{item.quantity}}</td>
+
+<td class="right">₹{{item.price}}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+<!-- TOTAL -->
+
+<table class="total-box">
+
+<tr>
+<td></td>
+<td class="right total">Total Paid : ₹{{transaction.amount}}</td>
+</tr>
+
+</table>
+
+<!-- FOOTER -->
+
+<div class="footer">
+Thank you for your purchase
+</div>
+
+</body>
+</html>

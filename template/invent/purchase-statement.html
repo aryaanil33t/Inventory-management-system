@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Purchase Statement</title>
+    <style>
+        body { font-family: Arial, sans-serif; font-size: 14px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #333; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        h2 { text-align: center; }
+    </style>
+</head>
+<body>
+    <h2>Purchase Statement</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Invoice</th>
+                <th>Supplier</th>
+                <th>Date</th>
+                <th>Products</th>
+                <th>Quantity</th>
+                <th>Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for purchase in purchases %}
+            {% for item in purchase.purchaseitem_set.all %}
+            <tr>
+                {% if forloop.first %}
+                <td rowspan="{{ purchase.purchaseitem_set.count }}">{{ forloop.parentloop.counter }}</td>
+                <td rowspan="{{ purchase.purchaseitem_set.count }}">{{ purchase.invoice_number }}</td>
+                <td rowspan="{{ purchase.purchaseitem_set.count }}">{{ purchase.supplier.name }}</td>
+                <td rowspan="{{ purchase.purchaseitem_set.count }}">{{ purchase.purchase_date }}</td>
+                {% endif %}
+                <td>{{ item.product.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }}</td>
+            </tr>
+            {% endfor %}
+            {% empty %}
+            <tr>
+                <td colspan="7" style="text-align:center;">No purchases found</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>

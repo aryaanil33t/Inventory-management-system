@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="container mt-5 mb-5">
+
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4">
+
+                    <h3 class="text-center mb-4">Add Location</h3>
+
+                    <!-- ERROR -->
+                    {% if error %}
+                        <div class="alert alert-danger">
+                            {{ error }}
+                        </div>
+                    {% endif %}
+
+                    <!-- FORM -->
+                    <form method="POST">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label class="form-label">Location Name</label>
+                            <input type="text" 
+                                   name="name" 
+                                   class="form-control"
+                                   placeholder="Enter location name"
+                                   required>
+                        </div>
+
+                        <!-- BUTTONS -->
+                        <div class="d-flex justify-content-between mt-4">
+
+                            <a href="{% url 'locations' %}" 
+                               class="btn btn-secondary">
+                                Back
+                            </a>
+
+                            <button type="submit" 
+                                    class="btn btn-success">
+                                Save Location
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

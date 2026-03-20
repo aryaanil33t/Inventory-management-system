@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="container mt-5 mb-5">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="mb-0">Warehouses</h3>
+
+        <a href="{% url 'add-warehouse' location.uuid %}" class="btn btn-primary">
+            + Add Warehouse
+        </a>
+    </div>
+
+    <!-- LOCATION INFO -->
+    <div class="mb-3">
+        <span class="text-muted">
+            Location: <strong>{{ location.name }}</strong>
+        </span>
+    </div>
+
+    {% if warehouse_data %}
+
+    <div class="card shadow-sm border-0">
+        <div class="table-responsive">
+
+            <table class="table table-hover mb-0 align-middle">
+
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Warehouse Name</th>
+                        <th>Status</th>
+                        <th class="text-start">Products & Racks</th>
+                        <th class="text-center">Actions</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for data in warehouse_data %}
+                    <tr>
+                        <td>{{ forloop.counter }}</td>
+                        <td>{{ data.warehouse.name }}</td>
+
+                        <!-- STATUS -->
+                        <td>
+                            {% if data.warehouse.active_status %}
+                                <span class="badge bg-success">Active</span>
+                            {% else %}
+                                <span class="badge bg-danger">Inactive</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- PRODUCTS COLUMN -->
+                        <td style="padding: 0.5rem; vertical-align: top;" class="text-start">
+                            {% if data.products %}
+                                <div class="d-flex flex-column gap-1">
+                                    {% for stock in data.products %}
+                                        <div>{{ stock.product.name }} - Rack: {{ stock.rack.name }} - Qty: {{ stock.quantity }}</div>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <span class="text-muted">No products</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- ACTIONS -->
+                        <td class="text-center">
+                            <!-- EDIT -->
+                            <a href="{% url 'edit-warehouse' data.warehouse.uuid %}" class="btn btn-sm btn-warning me-1">
+                                <i class="fa fa-edit"></i>
+                            </a>
+
+                            <!-- DELETE -->
+                            <form method="POST" action="{% url 'delete-warehouse' data.warehouse.uuid %}" style="display:inline;">
+                                {% csrf_token %}
+                                <button class="btn btn-sm btn-danger" onclick="return confirm('Delete this warehouse?')">
+                                    <i class="fa fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+
+                    </tr>
+                    {% endfor %}
+                </tbody>
+
+            </table>
+
+        </div>
+    </div>
+
+    {% else %}
+        <div class="alert alert-info">
+            No warehouses found for this location.
+        </div>
+    {% endif %}
+
+</div>
+
+{% endblock %}

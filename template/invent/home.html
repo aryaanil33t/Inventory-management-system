@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<style>
+/* HERO SECTION */
+.hero {
+    position: relative;
+    background-image: url("/static/assets/img/new2.jpg");
+    background-size: cover;
+    background-position: center top;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    height: 45vh;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.hero::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.hero .container {
+    position: relative;
+    z-index: 2;
+    color: white;
+}
+
+/* PRODUCT CARDS */
+.product-card {
+    height: 400px; /* uniform card height */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.product-card img {
+    width: 100%;
+    height: 200px; /* uniform image height */
+    object-fit: cover; /* crop & fit nicely */
+}
+
+.card-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+</style>
+
+<main class="main">
+
+<!-- HERO -->
+<section class="hero section dark-background">
+    <div class="container text-center">
+        <h2>INVENTORY MANAGEMENT SYSTEM</h2>
+        <p>Manage products, stock and inventory efficiently</p>
+    </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="portfolio section">
+<div class="container">
+
+<h3 id="available-products" class="text-center mb-4">Available Products</h3>
+
+<!-- SEARCH RESULT INFO -->
+{% if query %}
+<div class="alert alert-info text-center">
+    Showing {{ products|length }} result(s) for "<strong>{{ query }}</strong>"
+    <br>
+    <a href="{% url 'dashboard' %}" class="btn btn-sm btn-dark mt-2">
+        Clear Search
+    </a>
+</div>
+{% endif %}
+
+<div class="row gy-4">
+
+{% if products %}
+
+    {% for product in products %}
+
+    <div class="col-lg-4 col-md-6">
+        <div class="card shadow-sm product-card">
+
+            {% if product.product_image %}
+                <img src="{{ product.product_image.url }}" class="card-img-top" alt="{{ product.name }}">
+            {% else %}
+                <img src="https://via.placeholder.com/300x200" class="card-img-top" alt="No Image">
+            {% endif %}
+
+            <div class="card-body text-center">
+
+                <h5>{{ product.name }}</h5>
+                <p>Price: ₹{{ product.selling_price }}</p>
+
+                <!-- VIEW -->
+                <a href="{% url 'product-detail' product.uuid %}" class="btn btn-sm btn-primary mb-1">
+                    <i class="bi bi-eye"></i> View
+                </a>
+
+                <!-- ADMIN ACTIONS -->
+                {% if request.user.is_staff %}
+                <div class="mt-2">
+                    <a href="{% url 'product-edit' product.uuid %}" class="btn btn-sm btn-warning me-1">
+                        <i class="bi bi-pencil"></i>
+                    </a>
+
+                    <a href="{% url 'product-delete' product.uuid %}" class="btn btn-sm btn-danger">
+                        <i class="bi bi-trash"></i>
+                    </a>
+                </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+
+    {% endfor %}
+
+{% else %}
+
+    <div class="text-center">
+        <h4>No products found {% if query %}for "{{ query }}"{% endif %}</h4>
+    </div>
+
+{% endif %}
+
+</div>
+
+</div>
+</section>
+
+</main>
+
+<script>
+    const query = "{{ query }}";
+    if (query) {
+        document.getElementById("available-products").scrollIntoView({
+            behavior: "smooth"
+        });
+    }
+</script>
+
+{% endblock %}

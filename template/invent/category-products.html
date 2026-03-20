@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class="container mt-5 mb-5">
+    <h3 class="mb-4">Products in "{{ category.name }}"</h3>
+
+    {% if products %}
+        <div class="row g-4">
+            {% for product in products %}
+            <div class="col-md-3">
+                <div class="card shadow-sm">
+                    {% if product.product_image %}
+                    <img src="{{ product.product_image.url }}" class="card-img-top" style="height:200px; object-fit:cover;">
+                    {% else %}
+                    <img src="/static/assets/img/no-image.png" class="card-img-top" style="height:200px; object-fit:cover;">
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <p class="card-text">₹{{ product.selling_price }}</p>
+                        <a href="{% url 'product-detail' product.uuid %}" class="btn btn-sm btn-primary">View</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">No products found in this category.</div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+{% block main %}
+
+<section class="section">
+  <div class="container">
+
+    <div class="section-title">
+      <h2>Out of Stock Products</h2>
+    </div>
+
+    <ul class="list-group">
+      {% for product in products %}
+        <li class="list-group-item d-flex justify-content-between">
+          {{ product.name }}
+          <span class="badge bg-danger">Out</span>
+        </li>
+      {% empty %}
+        <li class="list-group-item">All products are in stock 🎉</li>
+      {% endfor %}
+    </ul>
+
+  </div>
+</section>
+
+{% endblock %}

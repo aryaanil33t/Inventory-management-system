@@ -82,8 +82,6 @@ class Product(Baseclass):
     purchase_price = models.DecimalField(max_digits=10, decimal_places=2)
     selling_price = models.DecimalField(max_digits=10, decimal_places=2)
 
-    minimum_stock = models.IntegerField(default=5)
-
     product_image = models.ImageField(upload_to='product_images', blank=True, null=True)
 
     class Meta:

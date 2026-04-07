@@ -42,7 +42,7 @@ urlpatterns = [
 
     path('cart/', views.CartView.as_view(), name='cart'),
     path('add-to-cart/<uuid:uuid>/', views.AddToCartView.as_view(), name='add-to-cart'),
-
+    path('remove-item/<int:item_id>/', views.RemoveFromCartView.as_view(), name='remove-item'),
     
 
 ]

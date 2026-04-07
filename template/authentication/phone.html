@@ -1,52 +1,56 @@
-
 {% extends 'base.html' %}
 
-{% block main%}
+{% block main %}
 
-  <main class="main">
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center" style="background-color: black">
 
- <section id="hero" class="hero section dark-background">
+  <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
+    
+    <!-- Title -->
+    <div class="text-center mb-4">
+      <h3 style="font-weight: 600;">Inventory Login</h3>
+      <p class="text-muted" style="font-size: 14px;">Sign in to manage your inventory</p>
+    </div>
 
-      <img src="/static/assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+    <!-- Form -->
+    <form method="post">
+      {% csrf_token %}
 
-      <div class="container d-flex flex-column align-items-center">
-        
-                 <div class="col-lg-6">
-                    <h3 class="my-4">Login</h3>
-            <form action="" method="post" data-aos="fade-up" data-aos-delay="500" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="row gy-4">
-
-                <div class="col-md-10">
-                  <!-- <input type="text" name="name" class="form-control" placeholder="Movie Name" required=""> -->
-                   {{ form.phone }}
-                   {% if form.phone.errors %}
-                   <p class="small text-danger" style="font-size: 15px;">{{ form.phone.errors.0 }}</p>
-                   {% endif %}
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <button type="submit" style="color: #fff; background-color: #ff4a17; border: 0px; padding: 10px 30px; transition: 0.4s; border-radius: 50px;">Login</button>
-                </div>
-
-                <div class="col-md-12 text-center ">
-
-                   {% if error %}
-                   <p class="small text-danger" style="font-size: 15px;">{{ error }}</p>
-                   {% endif %}
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <p style="font-size: 20px;">Don't have an account?<a href="{% url 'signup' %}"> signup now</a></p>
-                </div>
-
-              </div>
-            </form>
-          </div><!-- End Contact Form -->
+      <!-- Phone Field -->
+      <div class="mb-3">
+        <label class="form-label">Phone Number</label>
+        {{ form.phone }}
+        {% if form.phone.errors %}
+          <p class="text-danger small mt-1">{{ form.phone.errors.0 }}</p>
+        {% endif %}
       </div>
 
-    </section>
+      <!-- Submit Button -->
+      <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-primary" style="border-radius: 8px;">
+          Login
+        </button>
+      </div>
 
-  </main>
+      <!-- Error Message -->
+      {% if error %}
+      <div class="text-center mb-2">
+        <p class="text-danger small">{{ error }}</p>
+      </div>
+      {% endif %}
+
+      <!-- Signup Link -->
+      <div class="text-center">
+        <p class="small">
+          Don’t have an account?
+          <a href="{% url 'signup' %}" class="text-decoration-none">Sign up</a>
+        </p>
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
 
 {% endblock %}

@@ -3,16 +3,26 @@
 
 {% block main %}
 
-
-
 <div class="container mt-5 mb-5">
-        <!-- HEADER & PDF DOWNLOAD -->
+    
+    <!-- HEADER + BUTTONS -->
     <div class="d-flex justify-content-between align-items-center mb-3">
+        
         <h3 class="mb-0">Purchase List</h3>
-        <a href="{% url 'purchase-statement-pdf' %}" 
-           class="btn btn-success" target="_blank">
-            <i class="fa fa-download"></i> Download PDF
-        </a>
+        
+        <div>
+            <!-- ✅ ADD BUTTON (NEW) -->
+            <a href="{% url 'add-purchase' %}" class="btn btn-primary me-2">
+                <i class="fa fa-plus"></i> Add Purchase
+            </a>
+
+            <!-- EXISTING PDF BUTTON -->
+            <a href="{% url 'purchase-statement-pdf' %}" 
+               class="btn btn-success" target="_blank">
+                <i class="fa fa-download"></i> Download PDF
+            </a>
+        </div>
+
     </div>
 
     {% if purchases %}
@@ -42,6 +52,14 @@
                                class="btn btn-sm btn-info">
                                <i class="fa fa-eye"></i> View
                             </a>
+
+                            <!-- ✅ DELETE BUTTON (OPTIONAL ADD) -->
+                            <a href="{% url 'delete-purchase' %}?invoice_number={{ purchase.invoice_number }}" 
+                               class="btn btn-sm btn-danger"
+                               onclick="return confirm('Delete this purchase?')">
+                               <i class="fa fa-trash"></i>
+                            </a>
+
                         </td>
                     </tr>
                     {% endfor %}
@@ -53,4 +71,5 @@
         <div class="alert alert-info">No purchases found.</div>
     {% endif %}
 </div>
+
 {% endblock %}

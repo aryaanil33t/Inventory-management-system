@@ -14,7 +14,7 @@ from invent.models import Product, Sale, SaleItem, Customer,Purchase
 from invents.models import Order as InventOrder, OrderItem, Stock
 from payment.models import Order, PaymentStatusChoices
 from .models import Payment, Transaction
-
+from invents.views import Cart,CartItem
 
 # ----------------------------------
 # CREATE PAYMENT
@@ -201,6 +201,13 @@ class PaymentVerifyView(View):
         # --------------------------------
         messages.success(request, "Payment Successfully Completed")
 
+        # CLEAR CART AFTER SUCCESS
+        try:
+            cart = Cart.objects.get(user=request.user)
+            cart.items.all().delete()
+        except Cart.DoesNotExist:
+            pass
+
         return redirect('invoice', uuid=transaction.uuid)
 
 
@@ -330,3 +337,66 @@ class SalesStatementPDF(View):
         response = HttpResponse(pdf, content_type='application/pdf')
         response['Content-Disposition'] = 'inline; filename="sales-statement.pdf"'
         return response
+
+
+class CreateCartPaymentView(View):
+
+    def get(self, request, *args, **kwargs):
+
+        cart = Cart.objects.get(user=request.user)
+        items = cart.items.all()
+
+        if not items:
+            messages.error(request, "Cart is empty")
+            return redirect('cart')
+
+        total_amount = 0
+
+        # CREATE ORDER
+        order = Order.objects.create(
+            customer=request.user
+        )
+
+        # CREATE ORDER ITEMS
+        for item in items:
+            product = item.product
+
+            stock = Stock.objects.filter(product=product).aggregate(total=Sum("quantity"))
+            current_stock = stock["total"] if stock["total"] else 0
+
+            if current_stock < item.quantity:
+                messages.error(request, f"{product.name} is out of stock")
+                return redirect('cart')
+
+            OrderItem.objects.create(
+                order=order,
+                product=product,
+                quantity=item.quantity,
+                price=product.selling_price
+            )
+
+            total_amount += product.selling_price * item.quantity
+
+        # CREATE PAYMENT
+        payment = Payment.objects.create(
+            order=order,
+            amount=total_amount
+        )
+
+        # RAZORPAY
+        client = razorpay.Client(
+            auth=(config('RZP_KEY_ID'), config('RZP_KEY_SECRETE'))
+        )
+
+        rzp_order = client.order.create({
+            "amount": int(total_amount * 100),
+            "currency": "INR"
+        })
+
+        transaction = Transaction.objects.create(
+            payment=payment,
+            gateway_order_id=rzp_order['id'],
+            amount=total_amount
+        )
+
+        return redirect("razorpay", uuid=transaction.uuid)

@@ -19,5 +19,5 @@ urlpatterns = [
 
     path('purchases/pdf/', views.PurchaseStatementPDF.as_view(), name='purchase-statement-pdf'),
     path('sales/pdf/', views.SalesStatementPDF.as_view(), name='sales-statement-pdf'),
-
+    path('cart-checkout/', views.CreateCartPaymentView.as_view(), name='cart-checkout'),
 ]

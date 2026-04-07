@@ -1,5 +1,7 @@
 from django import forms
 from .models import Category, Supplier, Customer, Product, Purchase, Sale
+from invents.models import Stock
+
 
 
 # ===============================
@@ -67,10 +69,29 @@ class CustomerForm(forms.ModelForm):
 # ===============================
 
 class ProductForm(forms.ModelForm):
+    
+    quantity = forms.IntegerField(
+        required=True,
+        widget=forms.NumberInput(attrs={
+            'class':'form-control',
+            'placeholder':'Stock Quantity'
+        })
+    )
 
     class Meta:
         model = Product
-        exclude = ['uuid', 'active_status']
+
+        fields = [
+            'name',
+            'description',
+            'sku',
+            'category',
+            'supplier',
+            'purchase_price',
+            'selling_price',
+            
+            'product_image'
+        ]
 
         widgets = {
             'name': forms.TextInput(attrs={
@@ -100,14 +121,7 @@ class ProductForm(forms.ModelForm):
                 'class': 'form-control',
                 'placeholder': 'Selling Price'
             }),
-            'stock_quantity': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Stock Quantity'
-            }),
-            'minimum_stock': forms.NumberInput(attrs={
-                'class': 'form-control',
-                'placeholder': 'Minimum Stock Level'
-            }),
+
             'product_image': forms.FileInput(attrs={
                 'class': 'form-control'
             }),

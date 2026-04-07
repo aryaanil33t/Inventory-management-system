@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+
+{% block main %}
+
+<div class="container mt-5">
+    <h3>Add Purchase</h3>
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <!-- Purchase Info -->
+        <div class="mb-3">
+            <label>Invoice Number</label>
+            <input type="text" name="invoice_number" class="form-control" required>
+        </div>
+
+        <div class="mb-3">
+            <label>Supplier</label>
+            <select name="supplier" class="form-control" required>
+                <option value="">Select Supplier</option>
+                {% for s in suppliers %}
+                    <option value="{{ s.id }}">{{ s.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label>Purchase Date</label>
+            <input type="date" name="purchase_date" class="form-control" required>
+        </div>
+
+        <hr>
+
+        <!-- Items -->
+        <h5>Items</h5>
+
+        <div id="items">
+            <div class="row item-row mb-2">
+                
+                <div class="col">
+                    <select name="product" class="form-control">
+                        <option value="">Select Product</option>
+                        {% for p in products %}
+                            <option value="{{ p.id }}">{{ p.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col">
+                    <input type="number" name="quantity" class="form-control" placeholder="Qty">
+                </div>
+
+                <div class="col">
+                    <input type="number" name="price" class="form-control" placeholder="Price">
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Add Row Button -->
+        <button type="button" class="btn btn-secondary mb-3" onclick="addRow()">
+            + Add More Item
+        </button>
+
+        <br>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary">
+            Save Purchase
+        </button>
+
+    </form>
+</div>
+
+<!-- JS for dynamic rows -->
+<script>
+function addRow() {
+    let row = document.querySelector('.item-row').cloneNode(true);
+
+    // clear values
+    row.querySelectorAll('input').forEach(input => input.value = '');
+    row.querySelector('select').selectedIndex = 0;
+
+    document.getElementById('items').appendChild(row);
+}
+</script>
+
+{% endblock %}

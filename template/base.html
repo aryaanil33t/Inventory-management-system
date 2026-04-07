@@ -13,7 +13,7 @@
 <link href="/static/assets/vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
 <link href="/static/assets/vendor/bootstrap-icons/bootstrap-icons.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
-
+<link rel="stylesheet"href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link href="/static/assets/css/main.css" rel="stylesheet">
 <link href="/static/assets/css/style.css" rel="stylesheet">
 
@@ -129,22 +129,72 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.1/css/all.min.css"
 
 <!-- Categories -->
 <li class="nav-item dropdown">
+
+    <!-- Dropdown Toggle -->
     <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
         <i class="fa-solid fa-list"></i> Categories
     </a>
-    <ul class="dropdown-menu">
-        {% if categories %}
-            {% for category in categories %}
-            <li>
-                <a class="dropdown-item" href="{% url 'category-products' category.uuid %}">
-                    {{ category.name }}
+
+    <!-- Dropdown Menu -->
+<ul class="dropdown-menu">
+
+    <!-- ✅ CATEGORY LIST -->
+    {% if categories %}
+        {% for category in categories %}
+        <li class="d-flex justify-content-between align-items-center px-2">
+
+            <!-- Category Name -->
+            <a class="dropdown-item flex-grow-1" 
+               href="{% url 'category-products' category.uuid %}">
+                {{ category.name }}
+            </a>
+
+            <!-- ✅ ADMIN ACTIONS (NO STRUCTURE CHANGE) -->
+            {% if request.user.role == "Admin" %}
+            <div class="d-flex gap-2 pe-2">
+
+                <!-- Edit -->
+                <a href="{% url 'category-edit' category.uuid %}" 
+                   class="text-warning"
+                   title="Edit">
+                    <i class="fa-solid fa-pen"></i>
                 </a>
-            </li>
-            {% endfor %}
-        {% else %}
-            <li><span class="dropdown-item text-muted">No categories</span></li>
-        {% endif %}
-    </ul>
+
+                <!-- Delete -->
+                <form method="POST" 
+                      action="{% url 'category-delete' category.uuid %}">
+                    {% csrf_token %}
+                    <button type="submit"
+                            style="border:none; background:none;"
+                            onclick="return confirm('Delete this category?')"
+                            title="Delete">
+                        <i class="fa-solid fa-trash text-danger"></i>
+                    </button>
+                </form>
+
+            </div>
+            {% endif %}
+
+        </li>
+        {% endfor %}
+    {% else %}
+        <li>
+            <span class="dropdown-item text-muted">No categories</span>
+        </li>
+    {% endif %}
+
+    <!-- ✅ ADMIN ONLY OPTION -->
+    {% if request.user.role == "Admin" %}
+        <li><hr class="dropdown-divider"></li>
+        <li>
+            <a class="dropdown-item text-primary fw-bold" href="{% url 'category-add' %}">
+                <i class="fa-solid fa-plus me-2"></i> Add Category
+            </a>
+        </li>
+    {% endif %}
+
+</ul>
+
 </li>
 
 {% if request.user.is_authenticated and not request.user.is_staff %}

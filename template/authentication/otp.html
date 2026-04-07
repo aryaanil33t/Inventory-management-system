@@ -1,70 +1,77 @@
 {% extends 'base.html' %}
 
-{% block main%}
+{% block main %}
 
-  <main class="main">
+<div class="container-fluid vh-100 d-flex align-items-center justify-content-center" style="background-color: black">
 
- <section id="hero" class="hero section dark-background">
+  <div class="card shadow-lg p-4" style="width: 400px; border-radius: 12px;">
 
-      <img src="/static/assets/img/hero-bg.jpg" alt="" data-aos="fade-in">
+    <!-- Title -->
+    <div class="text-center mb-3">
+      <h4 style="font-weight: 600;">OTP Verification</h4>
+      <p class="text-muted small">Enter the OTP sent to {{ phone }}</p>
+    </div>
 
-      <div class="container d-flex flex-column align-items-center">
-        
-                 <div class="col-lg-6">
-                    <h3 class="my-4">Veriy OTP</h3>
-                    <p>an otp send to {{ phone }}</p>
-            <form action="" method="post" data-aos="fade-up" data-aos-delay="500" enctype="multipart/form-data">
-              {% csrf_token %}
-              <div class="row gy-4">
+    <!-- Form -->
+    <form method="post">
+      {% csrf_token %}
 
-                <div class="col-md-10">
-                  <!-- <input type="text" name="name" class="form-control" placeholder="Movie Name" required=""> -->
-                   {{ form.otp }}
-                   {% if form.otp.errors %}
-                   <p class="small text-danger" style="font-size: 15px;">{{ form.otp.errors.0 }}</p>
-                   {% endif %}
-                </div>
-
-                <div class="col-md-12 text-center">
-                  <button type="submit" style="color: #fff; background-color: #ff4a17; border: 0px; padding: 10px 30px; transition: 0.4s; border-radius: 50px;">Login</button>
-                </div>
-
-                <div class="col-md-12 text-center ">
-
-                   {% if error %}
-                   <p class="small text-danger" style="font-size: 15px;">{{ error }}</p>
-                   {% endif %}
-                </div>
-
-              </div>
-            </form>
-            <p class="text-center text-danger small" id="timer"></p>
-          </div><!-- End Contact Form -->
+      <!-- OTP Field -->
+      <div class="mb-3">
+        <label class="form-label">Enter OTP</label>
+        {{ form.otp }}
+        {% if form.otp.errors %}
+          <p class="text-danger small mt-1">{{ form.otp.errors.0 }}</p>
+        {% endif %}
       </div>
 
-    </section>
+      <!-- Submit Button -->
+      <div class="d-grid mb-3">
+        <button type="submit" class="btn btn-success" style="border-radius: 8px;">
+          Verify & Login
+        </button>
+      </div>
 
-  </main>
+      <!-- Error -->
+      {% if error %}
+      <div class="text-center mb-2">
+        <p class="text-danger small">{{ error }}</p>
+      </div>
+      {% endif %}
 
-  <script>
-    let timeLeft = parseInt('{{ remaining_time|default:0 }}');
-    let timerElement = document.getElementById('timer');
+      <!-- Timer / Resend -->
+      <div class="text-center">
+        <p id="timer" class="small text-muted"></p>
+      </div>
 
-    function updateTimer() {
-        if (timeLeft <= 0) {
-            timerElement.innerHTML = `
-            <a class="btn btn-primary mt-3" href='{% url 'phone-otp' %}'>Resend OTP</a>
-                `;
-        } else {
-            let minutes = Math.floor(timeLeft / 60);
-            let seconds = timeLeft % 60;
-            timerElement.innerText = `Time left: ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            timeLeft--;
-            setTimeout(updateTimer, 1000);
-        }
-    }
+    </form>
 
-    updateTimer();
+  </div>
+
+</div>
+
+<!-- Timer Script -->
+<script>
+  let timeLeft = parseInt('{{ remaining_time|default:0 }}');
+  let timerElement = document.getElementById('timer');
+
+  function updateTimer() {
+      if (timeLeft <= 0) {
+          timerElement.innerHTML = `
+              <a class="btn btn-outline-primary btn-sm mt-2" href="{% url 'phone-otp' %}">
+                  Resend OTP
+              </a>
+          `;
+      } else {
+          let minutes = Math.floor(timeLeft / 60);
+          let seconds = timeLeft % 60;
+          timerElement.innerText = `Resend OTP in ${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+          timeLeft--;
+          setTimeout(updateTimer, 1000);
+      }
+  }
+
+  updateTimer();
 </script>
 
 {% endblock %}

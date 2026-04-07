@@ -6,7 +6,7 @@ from .views import (
     ProductEditView,
     ProductDeleteView,
     CategoryListView,SupplierListView,PurchaseListView,SalesListView,AddSupplierView,SupplierEditView,DeleteSupplierView,PurchaseDetailView,SaleDetailView,
-    CategoryAddView,CategoryEditView,CategoryDeleteView,CategoryProductsView
+    CategoryAddView,CategoryEditView,CategoryDeleteView,CategoryProductsView,PurchaseCreateView,PurchaseDeleteView,PurchaseItemDeleteView
     
 )
 
@@ -21,9 +21,11 @@ urlpatterns = [
     path('categories/', CategoryListView.as_view(), name='category-list'),
     path('categories/add/', CategoryAddView.as_view(), name='category-add'),
     path('categories/edit/<uuid:uuid>/', CategoryEditView.as_view(), name='category-edit'),
-    path('categories/delete/<uuid:uuid>/', CategoryDeleteView.as_view(), name='category-delete'),
+    path('categories/<uuid:uuid>/delete/', CategoryDeleteView.as_view(), name='category-delete'),
     path('categories/<uuid:uuid>/', CategoryProductsView.as_view(), name='category-products'),
-
+    path('add-purchase/', PurchaseCreateView.as_view(), name='add-purchase'),
+    path('delete-purchase/', PurchaseDeleteView.as_view(), name='delete-purchase'),
+    path('delete-item/', PurchaseItemDeleteView.as_view(), name='delete-item'),
     # Purchases
     path('purchases/', PurchaseListView.as_view(), name='purchase-list'),
     path('purchases/detail/', PurchaseDetailView.as_view(), name='purchase-detail'),

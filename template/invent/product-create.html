@@ -6,7 +6,7 @@
 
 <section id="hero" class="hero section dark-background">
 
-  <img src="/static/assets/img/hero-bg.jpg" alt="">
+  <img src="/static/assets/img/about.jpg" alt="">
 
   <div class="container d-flex flex-column align-items-center">
 
@@ -79,19 +79,21 @@
             {% endif %}
           </div>
 
+          <!-- 🔹 NEW: Rack Selection
+          <div class="col-md-6">
+            <select name="rack" class="form-control">
+              <option value="">Select Rack</option>
+              {% for r in racks %}
+                <option value="{{ r.id }}">{{ r.name }}</option>
+              {% endfor %}
+            </select>
+          </div> -->
+
           <!-- Stock Quantity -->
           <div class="col-md-6">
-            {{ form.stock_quantity }}
-            {% if form.stock_quantity.errors %}
-            <p class="small text-danger">{{ form.stock_quantity.errors.0 }}</p>
-            {% endif %}
-          </div>
-
-          <!-- Minimum Stock -->
-          <div class="col-md-6">
-            {{ form.minimum_stock }}
-            {% if form.minimum_stock.errors %}
-            <p class="small text-danger">{{ form.minimum_stock.errors.0 }}</p>
+            {{ form.quantity }}
+            {% if form.quantity.errors %}
+            <p class="small text-danger">{{ form.quantity.errors.0 }}</p>
             {% endif %}
           </div>
 

@@ -373,3 +373,14 @@ class CartView(View):
             'items': items,
             'total': total
         })
+
+
+class RemoveFromCartView(View):
+    def post(self, request, item_id):
+        item = get_object_or_404(
+            CartItem,
+            id=item_id,
+            cart__user=request.user
+        )
+        item.delete()
+        return redirect('cart')

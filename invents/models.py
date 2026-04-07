@@ -47,17 +47,7 @@ class Rack(Baseclass):
         return f"{self.name} ({self.warehouse.name})"
 
 
-# 🔹 Category
-class Category(Baseclass):
 
-    name = models.CharField(max_length=100)
-
-    class Meta:
-        verbose_name = "Category"
-        verbose_name_plural = "Categories"
-
-    def __str__(self):
-        return self.name
 
 
 
@@ -65,7 +55,7 @@ class Category(Baseclass):
 # 🔹 Stock (like Seat)
 class Stock(Baseclass):
     product = models.ForeignKey('invent.Product', on_delete=models.CASCADE)  # ✅ ADD THIS
-    rack = models.ForeignKey(Rack, on_delete=models.CASCADE)
+    rack = models.ForeignKey(Rack,on_delete=models.CASCADE,null=True,blank=True)
     quantity = models.IntegerField()
 
     class Meta:

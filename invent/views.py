@@ -4,7 +4,7 @@ from django.db.models import Q
 from django.utils.decorators import method_decorator
 from datetime import date
 from .models import Product, Category,Supplier,Purchase,Sale,SaleItem,PurchaseItem,Customer
-from invents.models import Stock
+from invents.models import Stock,Rack
 from django.db.models import Sum
 
 from .forms import ProductForm,SupplierForm
@@ -18,6 +18,7 @@ class HomeView(View):
     template = 'invent/home.html'
 
     def get(self, request, *args, **kwargs):
+
 
         query = request.GET.get('query', '').strip()
 
@@ -45,8 +46,20 @@ class CategoryListView(View):
     template = 'invent/category-list.html'
 
     def get(self, request, *args, **kwargs):
-        categories = Category.objects.all()
-        return render(request, self.template, {'categories': categories, 'page': 'Categories'})
+        
+        categories = Category.objects.filter(active_status=True)
+
+        is_admin = False
+        if hasattr(request.user, 'role'):
+            is_admin = request.user.role == 'Admin'
+
+        return render(request, self.template, {
+            'categories': categories,
+            'page': 'Categories',
+            'is_admin': is_admin
+        })
+
+
 
 # ------------------------
 # Add Category
@@ -92,12 +105,16 @@ class CategoryEditView(View):
 # ------------------------
 @method_decorator(user_role_permission(roles=['Admin'], redirect_url='category-list'), name='dispatch')
 class CategoryDeleteView(View):
-    def post(self, request, uuid, *args, **kwargs):
+    def post(self, request, uuid):
+        print("DELETE CALLED")  # 🔥 TEST
         category = get_object_or_404(Category, uuid=uuid)
-        category.delete()
-    
+
+        category.active_status = False
+        category.save()
+
         return redirect('category-list')
-    
+ 
+ 
 
 
 
@@ -114,6 +131,9 @@ class CategoryProductsView(View):
             'page': category.name
         }
         return render(request, self.template_name, context)
+
+
+
     
 
 class SupplierListView(View):
@@ -229,6 +249,66 @@ class PurchaseDetailView(View):
         items = PurchaseItem.objects.filter(purchase=purchase)
         return render(request, self.template_name, {'purchase': purchase, 'items': items})
 
+
+class PurchaseCreateView(View):
+    template_name = 'invent/add-purchase.html'
+
+    def get(self, request):
+        suppliers = Supplier.objects.all()
+        products = Product.objects.all()
+
+        return render(request, self.template_name, {
+            'suppliers': suppliers,
+            'products': products
+        })
+
+    def post(self, request):
+        invoice_number = request.POST.get('invoice_number')
+        supplier_id = request.POST.get('supplier')
+        purchase_date = request.POST.get('purchase_date')
+
+        # Create Purchase
+        purchase = Purchase.objects.create(
+            invoice_number=invoice_number,
+            supplier_id=supplier_id,
+            purchase_date=purchase_date
+        )
+
+        # Get multiple item values
+        products = request.POST.getlist('product')
+        quantities = request.POST.getlist('quantity')
+        prices = request.POST.getlist('price')
+
+        # Save items
+        for i in range(len(products)):
+            if products[i]:  # avoid empty rows
+                PurchaseItem.objects.create(
+                    purchase=purchase,
+                    product_id=products[i],
+                    quantity=quantities[i],
+                    price=prices[i]
+                )
+
+        return redirect('purchase-list')
+    
+class PurchaseDeleteView(View):
+    def get(self, request):
+        invoice_number = request.GET.get('invoice_number')
+        purchase = get_object_or_404(Purchase, invoice_number=invoice_number)
+        purchase.delete()
+        return redirect('purchase-list')
+    
+    
+class PurchaseItemDeleteView(View):
+    def get(self, request):
+        item_id = request.GET.get('item_id')
+        item = get_object_or_404(PurchaseItem, id=item_id)
+
+        invoice_number = item.purchase.invoice_number
+        item.delete()
+
+        return redirect(f'/purchase-detail/?invoice_number={invoice_number}')
+
 # -------------------------------
 # Sales List
 # -------------------------------
@@ -284,8 +364,8 @@ class ProductCreateView(View):
     template = 'invent/product-create.html'
     form_class = ProductForm
 
+    # ✅ ADD THIS METHOD
     def get(self, request, *args, **kwargs):
-
         form = self.form_class()
 
         return render(request, self.template, {
@@ -298,14 +378,24 @@ class ProductCreateView(View):
         form = self.form_class(request.POST, request.FILES)
 
         if form.is_valid():
-            form.save()
+            product = form.save()
+
+            # ✅ assign quantity
+            quantity = form.cleaned_data.get('quantity')
+
+            Stock.objects.create(
+                product=product,
+                quantity=quantity
+            )
+
+            
+
             return redirect('product-list')
 
         return render(request, self.template, {
             'form': form,
             'page': 'Create Product'
         })
-
 
 
 
@@ -337,10 +427,14 @@ class ProductEditView(View):
     def get(self, request, *args, **kwargs):
 
         uuid = kwargs.get('uuid')
-
         product = get_object_or_404(Product, uuid=uuid)
 
         form = self.form_class(instance=product)
+
+        # 🔥 Load existing stock
+        stock = Stock.objects.filter(product=product).first()
+        if stock:
+            form.fields['quantity'].initial = stock.quantity
 
         return render(request, self.template, {
             'form': form,
@@ -348,15 +442,30 @@ class ProductEditView(View):
         })
 
     def post(self, request, *args, **kwargs):
-
+        
         uuid = kwargs.get('uuid')
-
+        
         product = get_object_or_404(Product, uuid=uuid)
 
         form = self.form_class(request.POST, request.FILES, instance=product)
 
         if form.is_valid():
-            form.save()
+            product = form.save()
+
+            quantity = form.cleaned_data.get('quantity')
+
+        # 🔥 HANDLE NONE VALUE
+            if quantity is None:
+                quantity = 0
+
+            stock, created = Stock.objects.get_or_create(
+                product=product,
+                defaults={'quantity': 0}   # 🔥 FIX
+            )
+
+            stock.quantity = quantity
+            stock.save()
+
             return redirect('product-list')
 
         return render(request, self.template, {
@@ -364,7 +473,9 @@ class ProductEditView(View):
             'page': 'Edit Product'
         })
 
-
+    
+       
+ 
 @method_decorator(user_role_permission(roles=['Admin'], redirect_url='product-list'), name='dispatch')
 class ProductDeleteView(View):
 
